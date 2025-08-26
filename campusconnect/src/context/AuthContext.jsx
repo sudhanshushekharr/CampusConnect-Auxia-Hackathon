@@ -43,7 +43,7 @@ const mockClubs = [
   {
     cid: 2,
     cname: 'NSS',
-    club_head_sid: 1, // John Doe
+    club_head_sid: 3, // Another student (not John Doe)
     aid: 1
   }
 ];

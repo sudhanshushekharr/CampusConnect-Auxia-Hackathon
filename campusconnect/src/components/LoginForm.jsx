@@ -38,8 +38,8 @@ const LoginForm = () => {
 
   const demoCredentials = [
     { role: 'Admin', email: 'admin@campus.edu', password: 'admin123' },
-    { role: 'Student', email: 'john.doe@student.edu', password: 'student123' },
-    { role: 'Club Leader', email: 'sarah.wilson@student.edu', password: 'club123' }
+    { role: 'Student (John Doe)', email: 'john.doe@student.edu', password: 'student123' },
+    { role: 'Club Leader (Sarah)', email: 'sarah.wilson@student.edu', password: 'club123' }
   ];
 
   const fillDemoCredentials = (email, password) => {

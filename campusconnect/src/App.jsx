@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { EventRegistrationProvider } from './components/EventRegistrationManager';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import LoginForm from './components/LoginForm';
@@ -121,7 +122,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <EventRegistrationProvider>
+        <AppContent />
+      </EventRegistrationProvider>
     </AuthProvider>
   );
 }
