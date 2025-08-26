@@ -1,7 +1,7 @@
 // API Service layer for backend integration
 // This structure is ready for your friend's backend implementation
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = 'http://localhost:5012/api';
 
 // Generic API call function
 const apiCall = async (endpoint, options = {}) => {
@@ -152,9 +152,13 @@ export const eventsAPI = {
   getAttendance: (eid) => apiCall(`/events/${eid}/attendance`),
   
   // POST /api/events/:eid/register
-  register: (eid, sid) => apiCall(`/events/${eid}/register`, {
+  register: (eid) => apiCall(`/events/${eid}/register`, {
     method: 'POST',
-    body: JSON.stringify({ sid }),
+  }),
+  
+  // DELETE /api/events/:eid/register (unregister)
+  unregister: (eid) => apiCall(`/events/${eid}/register`, {
+    method: 'DELETE',
   }),
 };
 
@@ -186,8 +190,8 @@ export const attendanceAPI = {
   // GET /api/attendance
   getAll: () => apiCall('/attendance'),
   
-  // POST /api/attendance/checkin
-  checkIn: (data) => apiCall('/attendance/checkin', {
+  // POST /api/attendance/mark - Main geolocation attendance endpoint
+  markAttendance: (data) => apiCall('/attendance/mark', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
@@ -198,11 +202,11 @@ export const attendanceAPI = {
   // GET /api/attendance/student/:sid
   getByStudent: (sid) => apiCall(`/attendance/student/${sid}`),
   
-  // PUT /api/attendance/:attid
-  update: (attid, data) => apiCall(`/attendance/${attid}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  }),
+  // GET /api/attendance/analytics
+  getAnalytics: () => apiCall('/attendance/analytics'),
+  
+  // GET /api/attendance/fraud-detection
+  getFraudDetection: () => apiCall('/attendance/fraud-detection'),
 };
 
 // QR Code and Location API calls

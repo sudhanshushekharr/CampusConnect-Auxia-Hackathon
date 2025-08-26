@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import EventList from '../components/EventList';
 import GeolocationAttendance from '../components/GeolocationAttendance';
 import { mockEvents } from '../data/mockData';
+import { eventsAPI } from '../services/api';
 import {
   TrophyIcon,
   CalendarIcon,
@@ -38,11 +39,27 @@ const StudentDashboard = () => {
   const handleRegister = async (eid) => {
     try {
       console.log('Attempting to register for event:', eid);
-      console.log('Current registered events:', registeredEvents);
+      
+      // Try backend API first
+      try {
+        const response = await eventsAPI.register(eid);
+        if (response.success) {
+          setRegisteredEvents(prev => {
+            const updated = [...prev, eid];
+            console.log('Successfully registered via API:', updated);
+            return updated;
+          });
+          return;
+        }
+      } catch (apiError) {
+        console.warn('Backend API not available, using mock registration:', apiError);
+      }
+      
+      // Fallback to mock behavior
       await new Promise(resolve => setTimeout(resolve, 1000));
       setRegisteredEvents(prev => {
         const updated = [...prev, eid];
-        console.log('Updated registered events:', updated);
+        console.log('Updated registered events (mock):', updated);
         return updated;
       });
       console.log('Successfully registered for event:', eid);
@@ -53,6 +70,19 @@ const StudentDashboard = () => {
 
   const handleUnregister = async (eid) => {
     try {
+      // Try backend API first
+      try {
+        const response = await eventsAPI.unregister(eid);
+        if (response.success) {
+          setRegisteredEvents(prev => prev.filter(id => id !== eid));
+          console.log('Successfully unregistered via API:', eid);
+          return;
+        }
+      } catch (apiError) {
+        console.warn('Backend API not available, using mock unregistration:', apiError);
+      }
+      
+      // Fallback to mock behavior
       await new Promise(resolve => setTimeout(resolve, 1000));
       setRegisteredEvents(prev => prev.filter(id => id !== eid));
       console.log('Unregistered from event:', eid);

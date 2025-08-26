@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -92,24 +93,29 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authAPI.login(email, password);
+      
+      if (response.success) {
+        const userData = response.data.user;
+        setUser(userData);
+        localStorage.setItem('campusconnect_user', JSON.stringify(userData));
+        return userData;
+      } else {
+        throw new Error(response.message || 'Login failed');
+      }
+    } catch (error) {
+      // If backend is not available, fallback to mock data
+      console.warn('Backend not available, using mock data:', error);
       
       const foundUser = findUserByCredentials(email, password);
-
       if (!foundUser) {
         throw new Error('Invalid credentials');
       }
 
-      // Remove password from user object before storing
       const { password: _, ...userWithoutPassword } = foundUser;
-      
       setUser(userWithoutPassword);
       localStorage.setItem('campusconnect_user', JSON.stringify(userWithoutPassword));
-      
       return userWithoutPassword;
-    } catch (error) {
-      throw error;
     }
   };
 

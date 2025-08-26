@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AttendanceMap from './AttendanceMap';
+import { attendanceAPI } from '../services/api';
 import {
   MapPinIcon,
   CheckCircleIcon,
@@ -164,28 +165,34 @@ const GeolocationAttendance = ({ event, onClose, onAttendanceMarked }) => {
     setIsLoading(true);
 
     try {
-      // Simulate API call to mark attendance
+      // Prepare data for backend API
       const attendanceData = {
-        eventId: event.eid,
-        studentLocation: location,
+        eid: event.eid,
+        studentLocation: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          accuracy: locationAccuracy
+        },
         locationAddress: locationAddress,
-        eventLocation: eventLocation,
-        distance: distanceFromEvent,
-        accuracy: locationAccuracy,
-        timestamp: new Date().toISOString(),
-        verified: true
+        deviceInfo: {
+          platform: 'web',
+          userAgent: navigator.userAgent
+        }
       };
 
-      // Mock API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      console.log('Attendance marked:', attendanceData);
+      // Call backend API
+      const response = await attendanceAPI.markAttendance(attendanceData);
       
-      setAttendanceStatus('marked');
-      
-      // Notify parent component
-      if (onAttendanceMarked) {
-        onAttendanceMarked(attendanceData);
+      if (response.success) {
+        console.log('Attendance marked successfully:', response.data);
+        setAttendanceStatus('marked');
+        
+        // Notify parent component
+        if (onAttendanceMarked) {
+          onAttendanceMarked(response.data);
+        }
+      } else {
+        throw new Error(response.message || 'Failed to mark attendance');
       }
 
     } catch (error) {
